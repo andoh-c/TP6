@@ -1,0 +1,31 @@
+
+  name: Testing
+
+  on: [push]
+
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      name: Testing
+      steps:
+        - uses: actions/checkout@v4
+        - name: Set up php 8.5
+          uses: shivammathur/setup-php@v2
+          with:
+            php-version: '8.5'
+            tools: castor
+            coverage: xdebug
+            extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, json, pdo, curl
+          env:
+            update: true
+
+        - name: Check PHP Version
+          run: php -v
+
+        - name: Install dependencies
+          run: composer self-update && composer install && composer dump-autoload
+
+        - name: Run tests
+          run: vendor/bin/phpunit
+
+
