@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ chantier.libelle }}{% endblock %}
+{% block body %}
+<h2>{{ chantier.libelle }}</h2>
+<p><strong>Bien :</strong> {{ chantier.bien }} | <strong>Statut :</strong>
+    <span class="badge bg-{{ chantier.statut == 'valide' ? 'success' : (chantier.statut == 'refuse' ? 'danger' : 'primary') }}">{{ chantier.statut }}</span>
+</p>
+
+<h4>Documents de l'inspecteur</h4>
+{% for d in documents %}
+    <div class="card mb-2"><div class="card-body py-2">
+        <strong>{{ d.type }}</strong> {{ d.observations ? '- ' ~ d.observations : '' }}
+        {% if d.fichier %}<a href="/uploads/documents/{{ d.fichier }}" target="_blank">Télécharger</a>{% endif %}
+    </div></div>
+{% else %}
+    <p class="text-muted">Aucun document.</p>
+{% endfor %}
+
+<h4>Photos</h4>
+<div class="row g-2 mb-3">
+{% for p in photos %}
+    <div class="col-3"><img src="/uploads/photos/{{ p.fichier }}" class="img-fluid rounded" alt="{{ p.description }}"></div>
+{% else %}
+    <p class="text-muted">Aucune photo.</p>
+{% endfor %}
+</div>
+
+{% if chantier.statut == 'cree' %}
+<div class="card p-3">
+    <h5>Valider ce chantier ?</h5>
+    <form method="post" action="{{ path('proprietaire_valider', {id: chantier.id}) }}" class="d-flex gap-2">
+        <button name="action" value="accepter" class="btn btn-success">Accepter</button>
+        <button name="action" value="refuser" class="btn btn-danger">Refuser</button>
+    </form>
+</div>
+{% endif %}
+{% endblock %}

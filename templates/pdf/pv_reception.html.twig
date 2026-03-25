@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<style>
+    body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
+    h1 { color: #333; border-bottom: 2px solid #333; padding-bottom: 5px; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+    th { background: #f0f0f0; }
+    .badge { padding: 3px 8px; border-radius: 4px; color: #fff; }
+    .conforme { background: #198754; }
+    .non-conforme { background: #dc3545; }
+</style>
+</head><body>
+<h1>Procès-Verbal de Réception</h1>
+<table>
+    <tr><th>Chantier</th><td>{{ chantier.libelle }}</td></tr>
+    <tr><th>Bien</th><td>{{ chantier.bien }}</td></tr>
+    <tr><th>Propriétaire</th><td>{{ chantier.bien.proprietaire }}</td></tr>
+    <tr><th>Inspecteur</th><td>{{ chantier.inspecteur }}</td></tr>
+    <tr><th>Date de réception</th><td>{{ reception.dateReception|date('d/m/Y') }}</td></tr>
+    <tr><th>Conformité</th><td><span class="badge {{ reception.conforme ? 'conforme' : 'non-conforme' }}">{{ reception.conforme ? 'Conforme' : 'Non conforme' }}</span></td></tr>
+    {% if reception.reserves %}
+    <tr><th>Réserves</th><td>{{ reception.reserves }}</td></tr>
+    {% endif %}
+</table>
+
+<h2>Devis type</h2>
+<table>
+    <thead><tr><th>Prestation</th><th>Quantité</th><th>Prix unitaire</th><th>Total</th></tr></thead>
+    <tbody>
+    {% set grandTotal = 0 %}
+    {% for l in chantier.lignesDevis %}
+        {% set lt = l.prestation.prixUnitaire * l.quantite %}
+        <tr><td>{{ l.prestation }}</td><td>{{ l.quantite }}</td><td>{{ l.prestation.prixUnitaire }} €</td><td>{{ lt }} €</td></tr>
+        {% set grandTotal = grandTotal + lt %}
+    {% endfor %}
+    </tbody>
+    <tfoot><tr><th colspan="3">Total</th><th>{{ grandTotal }} €</th></tr></tfoot>
+</table>
+
+<p style="margin-top:40px"><strong>Signature inspecteur :</strong> _________________________</p>
+<p><strong>Date :</strong> {{ reception.dateReception|date('d/m/Y') }}</p>
+</body></html>

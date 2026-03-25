@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ chantier.libelle }}{% endblock %}
+{% block body %}
+<h2>{{ chantier.libelle }}</h2>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5>Informations</h5>
+                <p><strong>Bien :</strong> {{ chantier.bien }}<br>
+                <strong>Propriétaire :</strong> {{ chantier.bien.proprietaire }}<br>
+                <strong>Date :</strong> {{ chantier.dateCreation|date('d/m/Y') }}<br>
+                <strong>Statut :</strong> {{ chantier.statut }}</p>
+                <h6>Devis type</h6>
+                <table class="table table-sm">
+                    <thead><tr><th>Prestation</th><th>Qté</th><th>PU</th></tr></thead>
+                    <tbody>
+                    {% for l in chantier.lignesDevis %}
+                        <tr><td>{{ l.prestation }}</td><td>{{ l.quantite }}</td><td>{{ l.prestation.prixUnitaire }} €</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        {% if chantier.bien.latitude and chantier.bien.longitude %}
+        <div id="map" style="height:300px" class="mb-3 rounded"></div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h4>Documents</h4>
+        {% for d in documents %}
+            <div class="card mb-2"><div class="card-body py-2">
+                <strong>{{ d.type }}</strong> - {{ d.observations ?? '' }}
+                {% if d.fichier %}<a href="/uploads/documents/{{ d.fichier }}" target="_blank" class="ms-2">Télécharger</a>{% endif %}
+                <small class="text-muted d-block">{{ d.createdAt|date('d/m/Y H:i') }}</small>
+            </div></div>
+        {% endfor %}
+        <form method="post" action="{{ path('inspecteur_add_document', {id: chantier.id}) }}" enctype="multipart/form-data" class="card p-3 mb-3">
+            <h6>Ajouter un document</h6>
+            <select name="type" class="form-select mb-2"><option value="DPE">DPE</option><option value="diagnostic_bruit">Diagnostic bruit</option><option value="autre">Autre</option></select>
+            <textarea name="observations" class="form-control mb-2" placeholder="Observations"></textarea>
+            <input type="file" name="fichier" class="form-control mb-2">
+            <button class="btn btn-primary btn-sm">Ajouter</button>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <h4>Photos</h4>
+        <div class="row g-2 mb-3">
+        {% for p in photos %}
+            <div class="col-4">
+                <img src="/uploads/photos/{{ p.fichier }}" class="img-fluid rounded" alt="{{ p.description }}">
+                <small>{{ p.description }}</small>
+            </div>
+        {% endfor %}
+        </div>
+        <form method="post" action="{{ path('inspecteur_add_photo', {id: chantier.id}) }}" enctype="multipart/form-data" class="card p-3 mb-3">
+            <h6>Ajouter une photo</h6>
+            <input type="text" name="description" class="form-control mb-2" placeholder="Description">
+            <input type="file" name="fichier" class="form-control mb-2" accept="image/*">
+            <button class="btn btn-primary btn-sm">Ajouter</button>
+        </form>
+    </div>
+</div>
+
+{% if not reception %}
+<div class="card p-3 mb-3">
+    <h4>Réception des travaux</h4>
+    <form method="post" action="{{ path('inspecteur_reception', {id: chantier.id}) }}">
+        <div class="mb-2">
+            <label class="form-label">Conforme ?</label>
+            <select name="conforme" class="form-select"><option value="1">Oui</option><option value="0">Non</option></select>
+        </div>
+        <textarea name="reserves" class="form-control mb-2" placeholder="Réserves éventuelles"></textarea>
+        <button class="btn btn-success">Valider la réception</button>
+    </form>
+</div>
+{% else %}
+<div class="alert alert-info">
+    <strong>Réception effectuée le {{ reception.dateReception|date('d/m/Y') }}</strong> -
+    {{ reception.conforme ? 'Conforme' : 'Non conforme' }}
+    {% if reception.reserves %} - Réserves : {{ reception.reserves }}{% endif %}
+    <a href="{{ path('inspecteur_pv_pdf', {id: chantier.id}) }}" class="btn btn-sm btn-outline-dark ms-2">Télécharger PV (PDF)</a>
+</div>
+{% endif %}
+
+{% endblock %}
+{% block javascripts %}
+{{ parent() }}
+{% if chantier.bien.latitude and chantier.bien.longitude %}
+<script>
+    var map = L.map('map').setView([{{ chantier.bien.latitude }}, {{ chantier.bien.longitude }}], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '© OSM'}).addTo(map);
+    L.marker([{{ chantier.bien.latitude }}, {{ chantier.bien.longitude }}]).addTo(map).bindPopup('{{ chantier.bien|e('js') }}').openPopup();
+</script>
+{% endif %}
+{% endblock %}

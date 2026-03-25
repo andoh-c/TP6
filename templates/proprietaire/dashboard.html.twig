@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mes biens{% endblock %}
+{% block body %}
+<h2>Mes biens</h2>
+<div class="row mb-4">
+{% for b in biens %}
+    <div class="col-md-4 mb-3">
+        <div class="card"><div class="card-body">
+            <h6>{{ b.adresse }}</h6>
+            <p class="mb-0">{{ b.codePostal }} {{ b.ville }}</p>
+        </div></div>
+    </div>
+{% endfor %}
+</div>
+<h2>Chantiers</h2>
+<table class="table table-striped">
+    <thead><tr><th>Libellé</th><th>Bien</th><th>Statut</th><th></th></tr></thead>
+    <tbody>
+    {% for c in chantiers %}
+        <tr>
+            <td>{{ c.libelle }}</td>
+            <td>{{ c.bien }}</td>
+            <td><span class="badge bg-{{ c.statut == 'valide' ? 'success' : (c.statut == 'refuse' ? 'danger' : 'primary') }}">{{ c.statut }}</span></td>
+            <td><a href="{{ path('proprietaire_chantier', {id: c.id}) }}" class="btn btn-sm btn-outline-primary">Voir</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

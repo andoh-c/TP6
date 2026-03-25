@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+{% block title %}Admin - Chantiers{% endblock %}
+{% block body %}
+<h2>Tableau de bord</h2>
+<div class="row mb-4">
+    <div class="col-md-3"><div class="card text-bg-primary p-3"><h4>{{ stats.total }}</h4><p class="mb-0">Chantiers</p></div></div>
+    <div class="col-md-3"><div class="card text-bg-warning p-3"><h4>{{ stats.en_cours }}</h4><p class="mb-0">En cours</p></div></div>
+    <div class="col-md-3"><div class="card text-bg-success p-3"><h4>{{ stats.termines }}</h4><p class="mb-0">Terminés</p></div></div>
+    <div class="col-md-3"><div class="card text-bg-info p-3"><h4>{{ stats.propositions }}</h4><p class="mb-0">Propositions</p></div></div>
+</div>
+<h3>Tous les chantiers</h3>
+<table class="table table-striped">
+    <thead><tr><th>Libellé</th><th>Bien</th><th>Inspecteur</th><th>Date</th><th>Statut</th></tr></thead>
+    <tbody>
+    {% for c in chantiers %}
+        <tr>
+            <td>{{ c.libelle }}</td>
+            <td>{{ c.bien }}</td>
+            <td>{{ c.inspecteur }}</td>
+            <td>{{ c.dateCreation|date('d/m/Y') }}</td>
+            <td><span class="badge bg-{{ c.statut == 'termine' ? 'success' : (c.statut == 'refuse' ? 'danger' : 'primary') }}">{{ c.statut }}</span></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

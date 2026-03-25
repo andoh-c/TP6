@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mes propositions{% endblock %}
+{% block body %}
+<h2>Propositions de chantiers</h2>
+<table class="table table-striped">
+    <thead><tr><th>Chantier</th><th>Bien</th><th>Statut</th><th>Date</th><th></th></tr></thead>
+    <tbody>
+    {% for p in propositions %}
+        <tr>
+            <td>{{ p.chantier }}</td>
+            <td>{{ p.chantier.bien }}</td>
+            <td><span class="badge bg-{% if p.statut == 'envoye' %}warning{% elseif p.statut == 'accepte' %}info{% elseif p.statut == 'devis_soumis' %}success{% else %}secondary{% endif %}">{{ p.statut }}</span></td>
+            <td>{{ p.createdAt|date('d/m/Y') }}</td>
+            <td><a href="{{ path('entrepreneur_proposition', {id: p.id}) }}" class="btn btn-sm btn-outline-primary">Voir</a></td>
+        </tr>
+    {% else %}
+        <tr><td colspan="5" class="text-center">Aucune proposition.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

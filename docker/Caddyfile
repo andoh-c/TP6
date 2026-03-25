@@ -1,0 +1,12 @@
+{
+	# Disable HTTPS sans forcer la redirection HTTP -> HTTPS
+	auto_https disable_redirects
+}
+
+# Site servi en HTTP
+localhost:80 {
+	root * /app/public
+	encode zstd gzip
+	php_server
+	file_server
+}

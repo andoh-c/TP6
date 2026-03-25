@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+{% block title %}Admin - Utilisateurs{% endblock %}
+{% block body %}
+<h2>Utilisateurs</h2>
+<table class="table table-striped mb-4">
+    <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th></th></tr></thead>
+    <tbody>
+    {% for u in users %}
+        <tr>
+            <td>{{ u.nom }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.roles|join(', ') }}</td>
+            <td>
+                <form method="post" action="{{ path('admin_user_delete', {id: u.id}) }}" class="d-inline"
+                      onsubmit="return confirm('Supprimer ?')">
+                    <button class="btn btn-sm btn-danger">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="card p-3">
+    <h4>Nouvel utilisateur</h4>
+    <form method="post" action="{{ path('admin_user_new') }}">
+        <div class="row g-2 mb-2">
+            <div class="col"><input type="text" name="nom" class="form-control" placeholder="Nom" required></div>
+            <div class="col"><input type="email" name="email" class="form-control" placeholder="Email" required></div>
+            <div class="col"><input type="password" name="password" class="form-control" placeholder="Mot de passe" required></div>
+        </div>
+        <div class="row g-2 mb-2">
+            <div class="col">
+                <select name="role" class="form-select">
+                    <option value="ROLE_ADMIN">Admin</option>
+                    <option value="ROLE_INSPECTEUR">Inspecteur</option>
+                    <option value="ROLE_ENTREPRENEUR">Entrepreneur</option>
+                    <option value="ROLE_PROPRIETAIRE">Propriétaire</option>
+                </select>
+            </div>
+            <div class="col"><input type="number" name="entity_id" class="form-control" placeholder="ID entité liée (optionnel)"></div>
+        </div>
+        <button class="btn btn-primary">Créer</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mes chantiers{% endblock %}
+{% block body %}
+<h2>Mes chantiers assignés</h2>
+<table class="table table-striped">
+    <thead><tr><th>Libellé</th><th>Bien</th><th>Date</th><th>Statut</th><th></th></tr></thead>
+    <tbody>
+    {% for c in chantiers %}
+        <tr>
+            <td>{{ c.libelle }}</td>
+            <td>{{ c.bien }}</td>
+            <td>{{ c.dateCreation|date('d/m/Y') }}</td>
+            <td><span class="badge bg-{{ c.statut == 'termine' ? 'success' : 'primary' }}">{{ c.statut }}</span></td>
+            <td><a href="{{ path('inspecteur_chantier', {id: c.id}) }}" class="btn btn-sm btn-outline-primary">Voir</a></td>
+        </tr>
+    {% else %}
+        <tr><td colspan="5" class="text-center">Aucun chantier assigné.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
